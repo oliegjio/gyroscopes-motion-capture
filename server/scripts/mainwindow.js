@@ -13,6 +13,8 @@ var createWindow = function () {
         protocol: 'file:',
         slashes: true
     }));
+    mainWindow.webContents.openDevTools();
+    mainWindow.maximize();
     mainWindow.on('closed', function () {
         mainWindow = null;
     });

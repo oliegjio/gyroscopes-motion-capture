@@ -1,0 +1,34 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var THREE = require("three");
+var WIDTH = window.innerWidth;
+var HEIGHT = window.innerHeight;
+var VIEW_ANGLE = 60;
+var ASPECT = WIDTH / HEIGHT;
+var NEAR = 0.1;
+var FAR = 10000;
+var container = document.querySelector('#canvas');
+var renderer = new THREE.WebGLRenderer();
+var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+var scene = new THREE.Scene();
+scene.background = new THREE.Color(255, 0, 0);
+scene.add(camera);
+container.appendChild(renderer.domElement);
+var RADIUS = 50;
+var SEGMENTS = 16;
+var RINGS = 16;
+var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+var sphere = new THREE.Mesh(new THREE.SphereGeometry(RADIUS, SEGMENTS, RINGS), sphereMaterial);
+sphere.position.z = -300;
+scene.add(sphere);
+window.onresize = function (event) {
+    container.style.width = window.innerWidth.toString();
+    container.style.height = window.innerHeight.toString();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+};
+window.onresize(null);
+var update = function () {
+    renderer.render(scene, camera);
+    requestAnimationFrame(update);
+};
+requestAnimationFrame(update);

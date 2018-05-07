@@ -15,6 +15,9 @@ let createWindow = () => {
     slashes: true
   }))
 
+  mainWindow.webContents.openDevTools()
+  mainWindow.maximize()
+
   mainWindow.on('closed', () => {
     mainWindow = null
   })

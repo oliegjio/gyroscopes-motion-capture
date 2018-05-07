@@ -1,8 +1,0 @@
-# Installation:
-- `npm install -g typescript`.
-- `npm install --save-dev typescript gulp gulp-typescript`.
-- `npm install --save-dev @types/node`.
-- `npm install --save-dev gulp-watch`.
-
-# Running:
-- `gulp` and `nodemon source/js/main.js`.
