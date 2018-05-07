@@ -1,7 +1,7 @@
 import * as T from 'three'
 
 import { point, face } from './geometry'
-import { move3D } from './meshes';
+import { move } from './meshes';
 
 export class Limb {
     private initMesh(thickness: number, length: number) {
@@ -35,11 +35,11 @@ export class Limb {
         let material = new T.LineBasicMaterial()
         let center = thickness / 2
 
-        let mult = 100
+        let mult = 10000
 
         geometry.vertices.push(
-            point(center, center, 0 - 100),
-            point(center, center, length + 100)
+            point(center, center, 0 - mult),
+            point(center, center, length + mult)
         )
 
         this.line = new T.Line(geometry, material)
@@ -52,6 +52,8 @@ export class Limb {
 
     public setMeshMaterial(material: T.Material) { this.mesh.material = material }
     public getMeshMaterial(): T.Material { return this.mesh.material as T.Material }
+    public setLineMaterial(material: T.Material) { this.line.material = material }
+    public getLineMaterial(material: T.Material) { return this.line.material }
 
     private mesh: T.Mesh
     public getMesh(): T.Mesh { return this.mesh }
@@ -60,12 +62,17 @@ export class Limb {
     public getLine(): T.Line { return this.line }
 
     public move(x: number, y: number, z: number) {
-        move3D(this.mesh, x, y, z)
-        move3D(this.line, x, y, z)
+        move(this.mesh, x, y, z)
+        move(this.line, x, y, z)
     }
 
     public rotate(v: T.Vector3, r: number) {
         this.mesh.rotateOnAxis(v, r)
         this.line.rotateOnAxis(v, r)
+    }
+
+    public toScene(scene: T.Scene) {
+        scene.add(this.mesh)
+        scene.add(this.line)
     }
 }

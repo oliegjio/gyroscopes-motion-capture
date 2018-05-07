@@ -32,19 +32,9 @@ var updateJoinSphere = function (sphere, box1, box2) {
     var box2Geometry = box2.geometry;
     box1Geometry.computeBoundingBox();
 };
-// let sphere = createSphereMesh(15)
-// moveMesh(sphere, 0, 0, -300)
-// scene.add(sphere);
-// let box1 = createBoxMesh(30, 100, 30)
-// moveMesh(box1, -50, 0, -300)
-// scene.add(box1)
-// let box2 = createBoxMesh(100, 30, 30)
-// moveMesh(box2, -150, -100, -300)
-// scene.add(box2)
 var limb1 = new limb_1.Limb(30, 200);
 limb1.move(-50, 0, -300);
-scene.add(limb1.getLine());
-scene.add(limb1.getMesh());
+limb1.toScene(scene);
 ////////////////////////////////
 // EVENTS:
 ////////////////////////////////

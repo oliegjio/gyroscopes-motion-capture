@@ -31,21 +31,27 @@ var Limb = /** @class */ (function () {
         var geometry = new T.Geometry();
         var material = new T.LineBasicMaterial();
         var center = thickness / 2;
-        var mult = 100;
-        geometry.vertices.push(geometry_1.point(center, center, 0 - 100), geometry_1.point(center, center, length + 100));
+        var mult = 10000;
+        geometry.vertices.push(geometry_1.point(center, center, 0 - mult), geometry_1.point(center, center, length + mult));
         this.line = new T.Line(geometry, material);
     };
     Limb.prototype.setMeshMaterial = function (material) { this.mesh.material = material; };
     Limb.prototype.getMeshMaterial = function () { return this.mesh.material; };
+    Limb.prototype.setLineMaterial = function (material) { this.line.material = material; };
+    Limb.prototype.getLineMaterial = function (material) { return this.line.material; };
     Limb.prototype.getMesh = function () { return this.mesh; };
     Limb.prototype.getLine = function () { return this.line; };
     Limb.prototype.move = function (x, y, z) {
-        meshes_1.move3D(this.mesh, x, y, z);
-        meshes_1.move3D(this.line, x, y, z);
+        meshes_1.move(this.mesh, x, y, z);
+        meshes_1.move(this.line, x, y, z);
     };
     Limb.prototype.rotate = function (v, r) {
         this.mesh.rotateOnAxis(v, r);
         this.line.rotateOnAxis(v, r);
+    };
+    Limb.prototype.toScene = function (scene) {
+        scene.add(this.mesh);
+        scene.add(this.line);
     };
     return Limb;
 }());
