@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var T = require("three");
+var meshes_1 = require("./meshes");
 var limb_1 = require("./limb");
 var geometry_1 = require("./geometry");
 ////////////////////////////////////
@@ -20,6 +21,8 @@ var light = new T.PointLight(0xff0000, 0.5);
 light.position.setX(10);
 light.position.setY(50);
 light.position.setZ(130);
+meshes_1.move(camera, 500, 500, 500);
+camera.lookAt(geometry_1.point(0, 0, 0));
 scene.background = new T.Color(255, 0, 0);
 scene.add(camera);
 scene.add(light);
@@ -27,14 +30,24 @@ container.appendChild(renderer.domElement);
 /////////////////////////////////
 // GENERAL:
 /////////////////////////////////
-var updateJoinSphere = function (sphere, box1, box2) {
-    var box1Geometry = box1.geometry;
-    var box2Geometry = box2.geometry;
-    box1Geometry.computeBoundingBox();
+var updateJoinSphere = function (sphere, limb1, limb2) {
+    var first = limb1.getElbowVertex();
+    var second = limb2.getWristVertex();
+    var middle = geometry_1.middlePoint(first, second);
+    meshes_1.move(sphere, middle.x, middle.y, middle.z);
 };
-var limb1 = new limb_1.Limb(30, 200);
-limb1.move(-50, 0, -300);
-limb1.toScene(scene);
+var joinSphere = meshes_1.sphereMesh(70);
+scene.add(joinSphere);
+var lowerLimb = new limb_1.Limb(30, 200);
+lowerLimb.move(100, 0, -100);
+lowerLimb.rotate(geometry_1.N.y, Math.PI / 2);
+lowerLimb.toScene(scene);
+var upperLimb = new limb_1.Limb(40, 250);
+upperLimb.toScene(scene);
+// let s1 = sphereMesh(70)
+// let p1 = lowerLimb.getWristVertex()
+// move(s1, p1.x, p1.y, p1.z)
+// scene.add(s1)
 ////////////////////////////////
 // EVENTS:
 ////////////////////////////////
@@ -45,10 +58,22 @@ window.onresize = function (event) {
 };
 window.onresize(null);
 var update = function () {
-    renderer.render(scene, camera);
-    limb1.rotate(geometry_1.N.z, Math.PI / 100);
-    limb1.rotate(geometry_1.N.x, Math.PI / 100);
-    limb1.rotate(geometry_1.N.y, Math.PI / 100);
+    lowerLimb.rotate(geometry_1.N.z, Math.PI / 100);
+    // lowerLimb.rotate(N.x, Math.PI / 100)
+    // lowerLimb.rotate(N.y, Math.PI / 100)
+    console.log(lowerLimb.getElbowVertex());
+    updateJoinSphere(joinSphere, lowerLimb, upperLimb);
     requestAnimationFrame(update);
+    renderer.render(scene, camera);
 };
 requestAnimationFrame(update);
+// // let lastUpdate = Date.now()
+// let tick = () => {
+//     // let now = Date.now()
+//     // let delta = now - lastUpdate
+//     // lastUpdate = now
+//     lowerLimb.rotate(N.z, Math.PI / 100)
+//     renderer.render(scene, camera)
+//     updateJoinSphere(joinSphere, lowerLimb, upperLimb)
+// }
+// setInterval(tick, 0)

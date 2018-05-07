@@ -37,3 +37,10 @@ export let linesAngle = (line1: T.Line3, line2: T.Line3): number => {
     let bottom = first * second
     return Math.acos(top / bottom)
 }
+
+export let middlePoint = (point1: T.Vector3, point2: T.Vector3) => {
+    let x = (point1.x + point2.x) / 2
+    let y = (point1.y + point2.y) / 2
+    let z = (point1.z + point2.z) / 2
+    return point(x, y, z)
+}

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var T = require("three");
 exports.sphereMesh = function (radius, material) {
-    var segments = radius * 10;
-    var rings = radius * 10;
+    var segments = radius * 3;
+    var rings = radius * 3;
     if (!material)
         material = new T.MeshStandardMaterial();
     var sphere = new T.SphereGeometry(radius, segments, rings);
@@ -15,8 +15,8 @@ exports.boxMesh = function (width, height, depth, material) {
     var box = new T.BoxGeometry(width, height, depth);
     return new T.Mesh(box, material);
 };
-exports.move = function (mesh, x, y, z) {
-    mesh.position.setX(x);
-    mesh.position.setY(y);
-    mesh.position.setZ(z);
+exports.move = function (object, x, y, z) {
+    object.position.setX(x);
+    object.position.setY(y);
+    object.position.setZ(z);
 };
