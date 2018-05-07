@@ -7,6 +7,7 @@ var app = electron.app;
 var mainWindow;
 var createWindow = function () {
     mainWindow = new electron.BrowserWindow({ width: 800, height: 600 });
+    mainWindow.setMenu(null);
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, '..', 'views', 'index.html'),
         protocol: 'file:',

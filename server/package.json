@@ -12,14 +12,17 @@
   "devDependencies": {
     "@types/electron": "^1.6.10",
     "@types/node": "^10.0.4",
+    "@types/three": "^0.91.11",
     "gulp": "^3.9.1",
     "gulp-pug": "^4.0.1",
+    "gulp-sass": "^4.0.1",
     "gulp-typescript": "^4.0.2",
     "gulp-watch": "^5.0.0",
     "pug": "^2.0.3",
     "typescript": "^2.8.3"
   },
   "dependencies": {
-    "electron": "^2.0.0"
+    "electron": "^2.0.0",
+    "three": "^0.92.0"
   }
 }
