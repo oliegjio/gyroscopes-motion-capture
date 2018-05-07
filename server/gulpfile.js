@@ -5,26 +5,27 @@ var pug = require('gulp-pug')
 
 var typescriptProject = typescript.createProject('tsconfig.json')
 
-var pugSource = 'assets/pug/**/*.pug'
-var pugDestinaion = 'source/html/'
-
-var typescriptSource = 'assets/ts/**/*.ts'
-var typescriptDestination = 'source/js/'
+gulp.task('app', function() {
+    gulp.src('app.ts')
+    .pipe(typescriptProject())
+    .js.pipe(gulp.dest('.'))
+})
 
 gulp.task('typescript', function() {
-    typescriptProject.src()
+    gulp.src('scripts/**/*.ts')
     .pipe(typescriptProject())
-    .js.pipe(gulp.dest(typescriptDestination))
+    .js.pipe(gulp.dest('scripts'))
 })
 
 gulp.task('pug', function() {
-    return gulp.src(pugSource)
+    gulp.src('views/**/*.pug')
     .pipe(pug())
-    .pipe(gulp.dest(pugDestinaion))
+    .pipe(gulp.dest('views'))
 })
 
 gulp.task('default', function() {
-    gulp.watch(typescriptSource, ['typescript'])
-    gulp.watch(pugSource, ['pug'])
+    gulp.watch('scripts/**/*.ts', ['typescript'])
+    gulp.watch('views/**/*.pug', ['pug'])
+    gulp.watch('app.ts', ['app'])
 })
 
