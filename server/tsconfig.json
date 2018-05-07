@@ -1,0 +1,12 @@
+{
+    "include": [
+        "assets/ts/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ],
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "target": "es5"
+    }
+}
