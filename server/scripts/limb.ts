@@ -5,38 +5,60 @@ export class Limb {
     private line: B.LinesMesh
     private path: B.Vector3[]
 
+    private transparentMaterial: B.StandardMaterial
+    private frontPointMaterial: B.StandardMaterial
+    private backPointMaterial: B.StandardMaterial
+
     public constructor(thickness: number, length: number, public scene: B.Scene) {
         this.mesh = B.Mesh.CreateBox('Box', thickness, scene, true)
         this.mesh.scaling.x = length
 
-        let elbowPosition = new B.Vector3(thickness / 2, 0, 0)
-        let wristPosition = new B.Vector3(-thickness / 2, 0, 0)
+        let backSpherePosition = new B.Vector3(thickness / 2, 0, 0)
+        let frontSpherePosition = new B.Vector3(-thickness / 2, 0, 0)
 
-        let material = new B.StandardMaterial('Material', scene)
-        material.alpha = 0
+        this.transparentMaterial = new B.StandardMaterial('TransparentMaterial', scene)
+        this.transparentMaterial.alpha = 0
+        this.backPointMaterial = new B.StandardMaterial('BackSphereMaterial', scene)
+        this.backPointMaterial.diffuseColor = new B.Color3(0, 1, 0)
+        this.frontPointMaterial = new B.StandardMaterial('FrontSphereMaterial', scene)
+        this.frontPointMaterial.diffuseColor = new B.Color3(1, 0, 0)
 
-        this.elbow = B.Mesh.CreateSphere('Elbow', 0, 0, scene)
-        this.elbow.material = material
-        this.elbow.parent = this.mesh
-        this.elbow.position = elbowPosition
+        this.backPoint = B.Mesh.CreateSphere('Elbow', 0, 0, scene)
+        this.backPoint.parent = this.mesh
+        this.backPoint.position = backSpherePosition
         
-        this.wrist = B.Mesh.CreateSphere('Wrist', 0, 0, scene)
-        this.wrist.material = material
-        this.wrist.parent = this.mesh 
-        this.wrist.position = wristPosition
+        this.frontPoint = B.Mesh.CreateSphere('Wrist', 0, 0, scene)
+        this.frontPoint.parent = this.mesh 
+        this.frontPoint.position = frontSpherePosition
 
-        this.path = [elbowPosition.multiplyByFloats(5, 5, 5), wristPosition.multiplyByFloats(5, 5, 5)]
-
-        this.line = B.Mesh.CreateLines('Line', this.path, scene, true)
+        this.path = [backSpherePosition.multiplyByFloats(5, 5, 5), frontSpherePosition.multiplyByFloats(5, 5, 5)]
+        this.line = B.Mesh.CreateLines('Line', this.path, scene)
+        this.line.setEnabled(false)
         this.line.parent = this.mesh
+
+        this.showGuideLine()
+        this.showGuidePoints()
     }
 
-    public translate(v: B.Vector3, n: number) { this.mesh.translate(v, n) }
-    public rotate(v: B.Vector3, n: number) { this.mesh.rotate(v, n) }
+    public showGuidePoints(): void {
+        this.frontPoint.material = this.frontPointMaterial
+        this.backPoint.material = this.backPointMaterial
+    }
 
-    private elbow: B.Mesh
-    public getElbowPoint() { return this.elbow.getAbsolutePosition() }
+    public hideGuidePoints(): void {
+        this.frontPoint.material = this.transparentMaterial
+        this.backPoint.material = this.transparentMaterial
+    }
 
-    private wrist: B.Mesh
-    public getWristPoint() { return this.wrist.getAbsolutePosition() }
+    public showGuideLine(): void { this.line.setEnabled(true) }
+    public hideGuideLine(): void { this.line.setEnabled(false) }
+
+    public translate(v: B.Vector3, n: number): void { this.mesh.translate(v, n) }
+    public rotate(v: B.Vector3, n: number): void { this.mesh.rotate(v, n) }
+
+    private backPoint: B.Mesh
+    public getBackPoint(): B.Vector3 { return this.backPoint.getAbsolutePosition() }
+
+    private frontPoint: B.Mesh
+    public getFrontPoint(): B.Vector3 { return this.frontPoint.getAbsolutePosition() }
 }

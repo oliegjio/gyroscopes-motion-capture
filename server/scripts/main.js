@@ -15,8 +15,14 @@ exports.middlePoint = function (point1, point2) {
     var z = (point1.z + point2.z) / 2;
     return new B.Vector3(x, y, z);
 };
+var worldX = B.Mesh.CreateLines('WorldXAxis', [B.Vector3.Zero(), new B.Vector3(1000, 0, 0)], scene);
+var worldY = B.Mesh.CreateLines('WorldYAxis', [B.Vector3.Zero(), new B.Vector3(0, 1000, 0)], scene);
+var worldZ = B.Mesh.CreateLines('WorldZAxis', [B.Vector3.Zero(), new B.Vector3(0, 0, 1000)], scene);
+worldX.color = B.Color3.Red();
+worldY.color = B.Color3.Green();
+worldZ.color = B.Color3.Blue();
 var updateJoinSphere = function (sphere, limb1, limb2) {
-    var middle = exports.middlePoint(limb1.getWristPoint(), limb2.getWristPoint());
+    var middle = exports.middlePoint(limb1.getFrontPoint(), limb2.getFrontPoint());
     sphere.position = middle;
 };
 var lowerLimb = new limb_1.Limb(4.5, 5, scene);

@@ -18,8 +18,15 @@ export let middlePoint = (point1: B.Vector3, point2: B.Vector3) => {
     return new B.Vector3(x, y, z)
 }
 
+let worldX = B.Mesh.CreateLines('WorldXAxis', [B.Vector3.Zero(), new B.Vector3(1000, 0, 0)], scene)
+let worldY = B.Mesh.CreateLines('WorldYAxis', [B.Vector3.Zero(), new B.Vector3(0, 1000, 0)], scene)
+let worldZ = B.Mesh.CreateLines('WorldZAxis', [B.Vector3.Zero(), new B.Vector3(0, 0, 1000)], scene)
+worldX.color = B.Color3.Red()
+worldY.color = B.Color3.Green()
+worldZ.color = B.Color3.Blue()
+
 let updateJoinSphere = (sphere: B.Mesh, limb1: Limb, limb2: Limb) => {
-    let middle = middlePoint(limb1.getWristPoint(), limb2.getWristPoint())
+    let middle = middlePoint(limb1.getFrontPoint(), limb2.getFrontPoint())
     sphere.position = middle
 }
 
