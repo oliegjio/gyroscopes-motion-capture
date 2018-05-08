@@ -14,14 +14,14 @@ var Limb = /** @class */ (function () {
         this.backPointMaterial.diffuseColor = new B.Color3(0, 1, 0);
         this.frontPointMaterial = new B.StandardMaterial('FrontSphereMaterial', scene);
         this.frontPointMaterial.diffuseColor = new B.Color3(1, 0, 0);
-        this.backPoint = B.Mesh.CreateSphere('Elbow', 0, 0, scene);
+        this.backPoint = B.Mesh.CreateSphere('Elbow', 0, 0, scene, true);
         this.backPoint.parent = this.mesh;
         this.backPoint.position = backSpherePosition;
-        this.frontPoint = B.Mesh.CreateSphere('Wrist', 0, 0, scene);
+        this.frontPoint = B.Mesh.CreateSphere('Wrist', 0, 0, scene, true);
         this.frontPoint.parent = this.mesh;
         this.frontPoint.position = frontSpherePosition;
         this.path = [backSpherePosition.multiplyByFloats(5, 5, 5), frontSpherePosition.multiplyByFloats(5, 5, 5)];
-        this.line = B.Mesh.CreateLines('Line', this.path, scene);
+        this.line = B.Mesh.CreateLines('Line', this.path, scene, true);
         this.line.setEnabled(false);
         this.line.parent = this.mesh;
         this.showGuideLine();
@@ -39,8 +39,15 @@ var Limb = /** @class */ (function () {
     Limb.prototype.hideGuideLine = function () { this.line.setEnabled(false); };
     Limb.prototype.translate = function (v, n) { this.mesh.translate(v, n); };
     Limb.prototype.rotate = function (v, n) { this.mesh.rotate(v, n); };
-    Limb.prototype.getBackPoint = function () { return this.backPoint.getAbsolutePosition(); };
-    Limb.prototype.getFrontPoint = function () { return this.frontPoint.getAbsolutePosition(); };
+    Limb.prototype.getBackPoint = function () {
+        this.mesh.computeWorldMatrix(true);
+        return this.backPoint.getAbsolutePosition().clone();
+    };
+    Limb.prototype.getFrontPoint = function () {
+        this.mesh.computeWorldMatrix(true);
+        return this.frontPoint.getAbsolutePosition().clone();
+    };
+    Limb.prototype.setParent = function (parent) { this.mesh.parent = parent; };
     return Limb;
 }());
 exports.Limb = Limb;
