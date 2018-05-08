@@ -9,27 +9,24 @@ export class Hand {
     private upperLimb: Limb
     private join: B.Mesh
 
-    public constructor(private scene: B.Scene) {
+    public constructor(private scene: B.Scene, limbSize: number = 5) {
         this.hand = B.Mesh.CreateBox('Parent', 1, scene)
 
-        let limbSize = 5
-        let lowerLimbProportion = 1.6
-        let upperLimbProportion = 1.2
         let lowerLimbThickness = limbSize
-        let upperLimbThickness = limbSize * Math.abs(lowerLimbProportion - upperLimbProportion + 1)
-        let lowerLimbLength = lowerLimbThickness * lowerLimbProportion
-        let upperLimbLength = upperLimbThickness * upperLimbProportion
+        let upperLimbThickness = limbSize * 1.5
+        let lowerLimbLength = limbSize * 1.3
+        let upperLimbLength = limbSize * 1.1
 
         this.lowerLimb = new Limb(lowerLimbThickness, lowerLimbLength, scene)
         this.lowerLimb.setParent(this.hand)
         this.upperLimb = new Limb(upperLimbThickness, upperLimbLength, scene)
         this.upperLimb.setParent(this.hand)
-        this.join = B.Mesh.CreateSphere('Join', 30, 9, scene)
+        this.join = B.Mesh.CreateSphere('Join', 30, limbSize * 2, scene)
         this.join.parent = this.hand
 
         this.lowerLimb.rotate(B.Vector3.Forward(), - Math.PI / 2)
-        this.lowerLimb.translate(B.Vector3.Up().negate(), upperLimbLength * 2 + lowerLimbThickness * 2 + upperLimbThickness * 2)
-        this.lowerLimb.translate(B.Vector3.Left(), lowerLimbThickness * 0.8)
+        this.lowerLimb.translate(B.Vector3.Up(), limbSize * 6.5)
+        this.lowerLimb.translate(B.Vector3.Left(), limbSize * 7)
 
         this.updateJoinPosition()
     }
@@ -40,10 +37,15 @@ export class Hand {
     }
 
     public translate(v: B.Vector3, n: number): void {
-        this.hand.translate(v, n)
+        this.hand.translate(v, n, B.Space.WORLD)
     }
 
     public rotate(v: B.Vector3, n: number): void {
-        this.hand.rotate(v, n)
+        this.hand.rotate(v, n, B.Space.WORLD)
     }
+
+    public translateLowerLimb(v: B.Vector3, n: number) { this.lowerLimb.translate(v, n) }
+    public translateUpperLimb(v: B.Vector3, n: number) { this.upperLimb.translate(v, n) }
+    public rotateLowerLimb(v: B.Vector3, n: number) { this.lowerLimb.rotate(v, n) }
+    public rotateUpperLimb(v: B.Vector3, n: number) { this.upperLimb.rotate(v, n) }
 }

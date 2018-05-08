@@ -53,8 +53,8 @@ export class Limb {
     public showGuideLine(): void { this.line.setEnabled(true) }
     public hideGuideLine(): void { this.line.setEnabled(false) }
 
-    public translate(v: B.Vector3, n: number): void { this.mesh.translate(v, n) }
-    public rotate(v: B.Vector3, n: number): void { this.mesh.rotate(v, n) }
+    public translate(v: B.Vector3, n: number): void { this.mesh.translate(v, n, B.Space.WORLD) }
+    public rotate(v: B.Vector3, n: number): void { this.mesh.rotate(v, n, B.Space.WORLD) }
 
     private backPoint: B.Mesh
     public getBackPoint(): B.Vector3 {

@@ -19,12 +19,11 @@ worldY.color = B.Color3.Green()
 worldZ.color = B.Color3.Blue()
 
 let rightHand = new Hand(scene)
-rightHand.rotate(B.Vector3.Forward(), Math.PI / 6)
-rightHand.translate(B.Vector3.Up(), 50)
+rightHand.rotate(B.Vector3.Forward(), Math.PI / 4)
+rightHand.translate(B.Vector3.Left(), 10)
 
 scene.registerAfterRender(() => {
-    // lowerLimb.rotate(new B.Vector3(0, 0, 1), Math.PI / 100)
-    // updateJoinSphere(sphere, lowerLimb, upperLimb)
+    // rightHand.rotate(new B.Vector3(0, 0, 1), Math.PI / 100)
 })
 
 engine.runRenderLoop(() => {

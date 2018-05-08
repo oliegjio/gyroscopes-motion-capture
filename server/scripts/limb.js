@@ -37,8 +37,8 @@ var Limb = /** @class */ (function () {
     };
     Limb.prototype.showGuideLine = function () { this.line.setEnabled(true); };
     Limb.prototype.hideGuideLine = function () { this.line.setEnabled(false); };
-    Limb.prototype.translate = function (v, n) { this.mesh.translate(v, n); };
-    Limb.prototype.rotate = function (v, n) { this.mesh.rotate(v, n); };
+    Limb.prototype.translate = function (v, n) { this.mesh.translate(v, n, B.Space.WORLD); };
+    Limb.prototype.rotate = function (v, n) { this.mesh.rotate(v, n, B.Space.WORLD); };
     Limb.prototype.getBackPoint = function () {
         this.mesh.computeWorldMatrix(true);
         return this.backPoint.getAbsolutePosition().clone();
