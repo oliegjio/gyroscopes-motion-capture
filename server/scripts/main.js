@@ -1,79 +1,38 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var T = require("three");
-var meshes_1 = require("./meshes");
+var B = require("babylonjs");
 var limb_1 = require("./limb");
-var geometry_1 = require("./geometry");
-////////////////////////////////////
-// SCENE:
-////////////////////////////////////
-var WIDTH = window.innerWidth;
-var HEIGHT = window.innerHeight;
-var VIEW_ANGLE = 60;
-var ASPECT = WIDTH / HEIGHT;
-var NEAR = 0.1;
-var FAR = 10000;
-var container = document.querySelector('#canvas');
-var renderer = new T.WebGLRenderer();
-var camera = new T.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-var scene = new T.Scene();
-var light = new T.PointLight(0xff0000, 0.5);
-light.position.setX(10);
-light.position.setY(50);
-light.position.setZ(130);
-meshes_1.move(camera, 500, 500, 500);
-camera.lookAt(geometry_1.point(0, 0, 0));
-scene.background = new T.Color(255, 0, 0);
-scene.add(camera);
-scene.add(light);
-container.appendChild(renderer.domElement);
-/////////////////////////////////
-// GENERAL:
-/////////////////////////////////
+var canvas = document.querySelector('#canvas');
+var engine = new B.Engine(canvas, true, null, true);
+var scene = new B.Scene(engine);
+var light = new B.PointLight('Light', new B.Vector3(0, 100, 100), scene);
+var camera = new B.ArcRotateCamera('Camera', 0, 0.8, 100, B.Vector3.Zero(), scene);
+camera.attachControl(canvas, true);
+camera.position = new B.Vector3(50, 50, 50);
+exports.middlePoint = function (point1, point2) {
+    var x = (point1.x + point2.x) / 2;
+    var y = (point1.y + point2.y) / 2;
+    var z = (point1.z + point2.z) / 2;
+    return new B.Vector3(x, y, z);
+};
 var updateJoinSphere = function (sphere, limb1, limb2) {
-    var first = limb1.getElbowVertex();
-    var second = limb2.getWristVertex();
-    var middle = geometry_1.middlePoint(first, second);
-    meshes_1.move(sphere, middle.x, middle.y, middle.z);
+    var middle = exports.middlePoint(limb1.getWristPoint(), limb2.getWristPoint());
+    sphere.position = middle;
 };
-var joinSphere = meshes_1.sphereMesh(70);
-scene.add(joinSphere);
-var lowerLimb = new limb_1.Limb(30, 200);
-lowerLimb.move(100, 0, -100);
-lowerLimb.rotate(geometry_1.N.y, Math.PI / 2);
-lowerLimb.toScene(scene);
-var upperLimb = new limb_1.Limb(40, 250);
-upperLimb.toScene(scene);
-// let s1 = sphereMesh(70)
-// let p1 = lowerLimb.getWristVertex()
-// move(s1, p1.x, p1.y, p1.z)
-// scene.add(s1)
-////////////////////////////////
-// EVENTS:
-////////////////////////////////
+var lowerLimb = new limb_1.Limb(4.5, 5, scene);
+lowerLimb.translate(B.Vector3.Up(), 25);
+lowerLimb.translate(B.Vector3.Left(), 6);
+lowerLimb.rotate(B.Vector3.Forward(), Math.PI / 2);
+var upperLimb = new limb_1.Limb(6, 6, scene);
+var sphere = B.Mesh.CreateSphere('Sphere1', 30, 9, scene);
+scene.registerAfterRender(function () {
+    // lowerLimb.rotate(new B.Vector3(0, 0, 1), Math.PI / 100)
+    updateJoinSphere(sphere, lowerLimb, upperLimb);
+});
+engine.runRenderLoop(function () {
+    scene.render();
+});
 window.onresize = function (event) {
-    container.style.width = window.innerWidth.toString();
-    container.style.height = window.innerHeight.toString();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 };
-window.onresize(null);
-var update = function () {
-    lowerLimb.rotate(geometry_1.N.z, Math.PI / 100);
-    // lowerLimb.rotate(N.x, Math.PI / 100)
-    // lowerLimb.rotate(N.y, Math.PI / 100)
-    console.log(lowerLimb.getElbowVertex());
-    updateJoinSphere(joinSphere, lowerLimb, upperLimb);
-    requestAnimationFrame(update);
-    renderer.render(scene, camera);
-};
-requestAnimationFrame(update);
-// // let lastUpdate = Date.now()
-// let tick = () => {
-//     // let now = Date.now()
-//     // let delta = now - lastUpdate
-//     // lastUpdate = now
-//     lowerLimb.rotate(N.z, Math.PI / 100)
-//     renderer.render(scene, camera)
-//     updateJoinSphere(joinSphere, lowerLimb, upperLimb)
-// }
-// setInterval(tick, 0)

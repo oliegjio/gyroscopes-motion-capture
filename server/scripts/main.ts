@@ -1,98 +1,47 @@
-import * as T from 'three'
+import * as B from 'babylonjs'
 
-import { sphereMesh, boxMesh, move } from './meshes'
 import { Limb } from './limb'
-import { N, point, middlePoint } from './geometry'
 
-////////////////////////////////////
-// SCENE:
-////////////////////////////////////
+let canvas: HTMLCanvasElement = document.querySelector('#canvas')
 
-const WIDTH = window.innerWidth
-const HEIGHT = window.innerHeight
-const VIEW_ANGLE = 60
-const ASPECT = WIDTH / HEIGHT
-const NEAR = 0.1
-const FAR = 10000
+let engine = new B.Engine(canvas, true, null, true)
+let scene = new B.Scene(engine)
+let light = new B.PointLight('Light', new B.Vector3(0, 100, 100), scene)
+let camera = new B.ArcRotateCamera('Camera', 0, 0.8, 100, B.Vector3.Zero(), scene)
+camera.attachControl(canvas, true)
+camera.position = new B.Vector3(50, 50, 50)
 
-const container: HTMLElement = document.querySelector('#canvas')
-const renderer = new T.WebGLRenderer()
-const camera = new T.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
-const scene = new T.Scene()
-const light = new T.PointLight(0xff0000, 0.5)
-
-light.position.setX(10)
-light.position.setY(50)
-light.position.setZ(130)
-move(camera, 500, 500, 500)
-camera.lookAt(point(0, 0, 0))
-scene.background = new T.Color(255, 0, 0)
-scene.add(camera)
-scene.add(light)
-container.appendChild(renderer.domElement)
-
-/////////////////////////////////
-// GENERAL:
-/////////////////////////////////
-
-let updateJoinSphere = (sphere: T.Mesh, limb1: Limb, limb2: Limb) => {
-    let first = limb1.getElbowVertex()
-    let second = limb2.getWristVertex()
-    let middle = middlePoint(first, second)
-    move(sphere, middle.x, middle.y, middle.z)
+export let middlePoint = (point1: B.Vector3, point2: B.Vector3) => {
+    let x = (point1.x + point2.x) / 2
+    let y = (point1.y + point2.y) / 2
+    let z = (point1.z + point2.z) / 2
+    return new B.Vector3(x, y, z)
 }
 
-let joinSphere = sphereMesh(70)
-scene.add(joinSphere)
+let updateJoinSphere = (sphere: B.Mesh, limb1: Limb, limb2: Limb) => {
+    let middle = middlePoint(limb1.getWristPoint(), limb2.getWristPoint())
+    sphere.position = middle
+}
 
-let lowerLimb = new Limb(30, 200)
-lowerLimb.move(100, 0, -100)
-lowerLimb.rotate(N.y, Math.PI / 2)
-lowerLimb.toScene(scene)
+let lowerLimb = new Limb(4.5, 5, scene)
+lowerLimb.translate(B.Vector3.Up(), 25)
+lowerLimb.translate(B.Vector3.Left(), 6)
+lowerLimb.rotate(B.Vector3.Forward(), Math.PI / 2)
 
-let upperLimb = new Limb(40, 250)
-upperLimb.toScene(scene)
+let upperLimb = new Limb(6, 6, scene)
 
-// let s1 = sphereMesh(70)
-// let p1 = lowerLimb.getWristVertex()
-// move(s1, p1.x, p1.y, p1.z)
-// scene.add(s1)
+let sphere = B.Mesh.CreateSphere('Sphere1', 30, 9, scene)
 
-////////////////////////////////
-// EVENTS:
-////////////////////////////////
+scene.registerAfterRender(() => {
+    // lowerLimb.rotate(new B.Vector3(0, 0, 1), Math.PI / 100)
+    updateJoinSphere(sphere, lowerLimb, upperLimb)
+})
+
+engine.runRenderLoop(() => {
+    scene.render()
+})
 
 window.onresize = (event: Event) => {
-    container.style.width = window.innerWidth.toString()
-    container.style.height = window.innerHeight.toString()
-    renderer.setSize(window.innerWidth, window.innerHeight)
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
 }
-window.onresize(null)
-
-let update = () => {
-    lowerLimb.rotate(N.z, Math.PI / 100)
-    // lowerLimb.rotate(N.x, Math.PI / 100)
-    // lowerLimb.rotate(N.y, Math.PI / 100)
-
-    console.log(lowerLimb.getElbowVertex())
-
-    updateJoinSphere(joinSphere, lowerLimb, upperLimb)
-
-    requestAnimationFrame(update)
-    renderer.render(scene, camera)
-}
-requestAnimationFrame(update)
-
-
-// // let lastUpdate = Date.now()
-// let tick = () => {
-//     // let now = Date.now()
-//     // let delta = now - lastUpdate
-//     // lastUpdate = now
-
-//     lowerLimb.rotate(N.z, Math.PI / 100)
-
-//     renderer.render(scene, camera)
-//     updateJoinSphere(joinSphere, lowerLimb, upperLimb)
-// }
-// setInterval(tick, 0)
