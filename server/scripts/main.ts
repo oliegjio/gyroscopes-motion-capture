@@ -36,6 +36,12 @@ let leftUpperLimb: Limb = new Limb(5, 8, scene)
 let rightLowerLimb: Limb = new Limb(4, 8, scene)
 let rightUpperLimb: Limb = new Limb(5, 8, scene)
 
+leftLowerLimb.translate(B.Vector3.Right(), 90)
+leftUpperLimb.translate(B.Vector3.Right(), 40)
+
+rightLowerLimb.translate(B.Vector3.Left(), 90)
+rightUpperLimb.translate(B.Vector3.Left(), 40)
+
 scene.registerAfterRender(() => {
 
 })
