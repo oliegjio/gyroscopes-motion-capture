@@ -1,13 +1,13 @@
 import * as B from 'babylonjs'
 
 export class Limb {
-    private mesh: B.Mesh
-    private line: B.LinesMesh
-    private path: B.Vector3[]
+    private readonly mesh: B.Mesh
+    private readonly line: B.LinesMesh
+    private readonly path: B.Vector3[]
 
-    private transparentMaterial: B.StandardMaterial
-    private frontPointMaterial: B.StandardMaterial
-    private backPointMaterial: B.StandardMaterial
+    private readonly transparentMaterial: B.StandardMaterial
+    private readonly frontPointMaterial: B.StandardMaterial
+    private readonly backPointMaterial: B.StandardMaterial
 
     public constructor(thickness: number, length: number, public scene: B.Scene) {
         this.mesh = B.Mesh.CreateBox('Box', thickness, scene, true)
@@ -44,7 +44,6 @@ export class Limb {
         this.frontPoint.material = this.frontPointMaterial
         this.backPoint.material = this.backPointMaterial
     }
-
     public hideGuidePoints(): void {
         this.frontPoint.material = this.transparentMaterial
         this.backPoint.material = this.transparentMaterial
@@ -53,19 +52,19 @@ export class Limb {
     public showGuideLine(): void { this.line.setEnabled(true) }
     public hideGuideLine(): void { this.line.setEnabled(false) }
 
-    public translate(v: B.Vector3, n: number): void { this.mesh.translate(v, n, B.Space.WORLD) }
-    public rotate(v: B.Vector3, n: number): void { this.mesh.rotate(v, n, B.Space.WORLD) }
+    public translate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.translate(v, n, s) }
+    public rotate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.rotate(v, n, s) }
 
     private backPoint: B.Mesh
-    public getBackPoint(): B.Vector3 {
+    public getBackPointAbsolute(): B.Vector3 {
         this.mesh.computeWorldMatrix(true)
-        return this.backPoint.getAbsolutePosition().clone()
+        return this.backPoint.getAbsolutePosition()
     }
 
     private frontPoint: B.Mesh
-    public getFrontPoint(): B.Vector3 {
+    public getFrontPointAbsolute(): B.Vector3 {
         this.mesh.computeWorldMatrix(true)
-        return this.frontPoint.getAbsolutePosition().clone()
+        return this.frontPoint.getAbsolutePosition()
     }
 
     public setParent(parent: B.Mesh): void { this.mesh.parent = parent }

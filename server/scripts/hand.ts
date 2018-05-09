@@ -4,7 +4,7 @@ import { Limb } from './limb'
 import { middlePoint } from './math'
 
 export class Hand {
-    private hand: B.Mesh
+    private readonly hand: B.Mesh
     private lowerLimb: Limb
     private upperLimb: Limb
     private join: B.Mesh
@@ -31,18 +31,13 @@ export class Hand {
         this.updateJoinPosition()
     }
 
-    private updateJoinPosition(): void {
-        let middle = middlePoint(this.lowerLimb.getBackPoint(), this.upperLimb.getFrontPoint())
+    public updateJoinPosition(): void {
+        let middle = middlePoint(this.lowerLimb.getBackPointAbsolute(), this.upperLimb.getFrontPointAbsolute())
         this.join.position = middle
     }
 
-    public translate(v: B.Vector3, n: number): void {
-        this.hand.translate(v, n, B.Space.WORLD)
-    }
-
-    public rotate(v: B.Vector3, n: number): void {
-        this.hand.rotate(v, n, B.Space.WORLD)
-    }
+    public translate(v: B.Vector3, n: number): void { this.hand.translate(v, n, B.Space.WORLD) }
+    public rotate(v: B.Vector3, n: number): void { this.hand.rotate(v, n, B.Space.WORLD) }
 
     public translateLowerLimb(v: B.Vector3, n: number) { this.lowerLimb.translate(v, n) }
     public translateUpperLimb(v: B.Vector3, n: number) { this.upperLimb.translate(v, n) }

@@ -5,4 +5,4 @@
 - `npm install --save-dev gulp-watch`.
 
 # Running:
-- `gulp` and `nodemon source/js/main.js`.
+- Server: `gulp` and `electron .` (in the `server` directory).

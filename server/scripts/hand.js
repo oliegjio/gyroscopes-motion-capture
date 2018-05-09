@@ -24,15 +24,11 @@ var Hand = /** @class */ (function () {
         this.updateJoinPosition();
     }
     Hand.prototype.updateJoinPosition = function () {
-        var middle = math_1.middlePoint(this.lowerLimb.getBackPoint(), this.upperLimb.getFrontPoint());
+        var middle = math_1.middlePoint(this.lowerLimb.getBackPointAbsolute(), this.upperLimb.getFrontPointAbsolute());
         this.join.position = middle;
     };
-    Hand.prototype.translate = function (v, n) {
-        this.hand.translate(v, n, B.Space.WORLD);
-    };
-    Hand.prototype.rotate = function (v, n) {
-        this.hand.rotate(v, n, B.Space.WORLD);
-    };
+    Hand.prototype.translate = function (v, n) { this.hand.translate(v, n, B.Space.WORLD); };
+    Hand.prototype.rotate = function (v, n) { this.hand.rotate(v, n, B.Space.WORLD); };
     Hand.prototype.translateLowerLimb = function (v, n) { this.lowerLimb.translate(v, n); };
     Hand.prototype.translateUpperLimb = function (v, n) { this.upperLimb.translate(v, n); };
     Hand.prototype.rotateLowerLimb = function (v, n) { this.lowerLimb.rotate(v, n); };
