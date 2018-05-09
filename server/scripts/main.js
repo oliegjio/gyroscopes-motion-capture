@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var B = require("babylonjs");
+var net_1 = require("net");
 var limb_1 = require("./limb");
 var canvas = document.querySelector('#canvas');
 var engine = new B.Engine(canvas, true, null, true);
@@ -16,30 +17,28 @@ var worldZ = B.Mesh.CreateLines('WorldZAxis', [B.Vector3.Zero(), new B.Vector3(0
 worldX.color = B.Color3.Red();
 worldY.color = B.Color3.Green();
 worldZ.color = B.Color3.Blue();
-// let rightHand = new Hand(scene)
-// rightHand.rotate(B.Vector3.Left(), Math.PI)
-// rightHand.rotate(B.Vector3.Forward(), Math.PI / 6)
-// rightHand.translate(B.Vector3.Left(), 30)
-//
-// let leftHand = new Hand(scene)
-// leftHand.rotate(B.Vector3.Left(), Math.PI)
-// leftHand.rotate(B.Vector3.Forward(), Math.PI / 6)
-// leftHand.rotate(B.Vector3.Up(), Math.PI)
-// leftHand.translate(B.Vector3.Right(), 30)
 var leftLowerLimb = new limb_1.Limb(4, 8, scene);
 var leftUpperLimb = new limb_1.Limb(5, 8, scene);
-var rightLowerLimb = new limb_1.Limb(4, 8, scene);
-var rightUpperLimb = new limb_1.Limb(5, 8, scene);
 leftLowerLimb.translate(B.Vector3.Right(), 90);
 leftUpperLimb.translate(B.Vector3.Right(), 40);
+var rightLowerLimb = new limb_1.Limb(4, 8, scene);
+var rightUpperLimb = new limb_1.Limb(5, 8, scene);
 rightLowerLimb.translate(B.Vector3.Left(), 90);
 rightUpperLimb.translate(B.Vector3.Left(), 40);
-scene.registerAfterRender(function () {
-});
-engine.runRenderLoop(function () {
-    scene.render();
-});
+scene.registerAfterRender(function () { });
+engine.runRenderLoop(function () { scene.render(); });
 window.onresize = function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 };
+var server = net_1.createServer(function (socket) {
+    socket.write('You are connected');
+    socket.on('data', function (data) {
+        console.log(data);
+        leftLowerLimb.rotate(B.Vector3.Forward(), parseFloat(data));
+    });
+    socket.on('end', function () { console.log('Closing connection'); });
+    // socket.pipe(socket)
+});
+server.on('connection', function (socket) { console.log('New connection'); });
+server.listen(1337, 'localhost');

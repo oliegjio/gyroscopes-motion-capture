@@ -1,9 +1,9 @@
 import * as B from 'babylonjs'
+import { createServer, Server, Socket } from 'net'
 
 import { Limb } from './limb'
 
 let canvas: HTMLCanvasElement = document.querySelector('#canvas')
-
 let engine = new B.Engine(canvas, true, null, true)
 let scene = new B.Scene(engine)
 let light = new B.PointLight('Light', new B.Vector3(0, 100, 100), scene)
@@ -19,38 +19,34 @@ worldX.color = B.Color3.Red()
 worldY.color = B.Color3.Green()
 worldZ.color = B.Color3.Blue()
 
-// let rightHand = new Hand(scene)
-// rightHand.rotate(B.Vector3.Left(), Math.PI)
-// rightHand.rotate(B.Vector3.Forward(), Math.PI / 6)
-// rightHand.translate(B.Vector3.Left(), 30)
-//
-// let leftHand = new Hand(scene)
-// leftHand.rotate(B.Vector3.Left(), Math.PI)
-// leftHand.rotate(B.Vector3.Forward(), Math.PI / 6)
-// leftHand.rotate(B.Vector3.Up(), Math.PI)
-// leftHand.translate(B.Vector3.Right(), 30)
-
 let leftLowerLimb: Limb = new Limb(4, 8, scene)
 let leftUpperLimb: Limb = new Limb(5, 8, scene)
-
-let rightLowerLimb: Limb = new Limb(4, 8, scene)
-let rightUpperLimb: Limb = new Limb(5, 8, scene)
-
 leftLowerLimb.translate(B.Vector3.Right(), 90)
 leftUpperLimb.translate(B.Vector3.Right(), 40)
 
+let rightLowerLimb: Limb = new Limb(4, 8, scene)
+let rightUpperLimb: Limb = new Limb(5, 8, scene)
 rightLowerLimb.translate(B.Vector3.Left(), 90)
 rightUpperLimb.translate(B.Vector3.Left(), 40)
 
-scene.registerAfterRender(() => {
-
-})
-
-engine.runRenderLoop(() => {
-    scene.render()
-})
+scene.registerAfterRender(() => {})
+engine.runRenderLoop(() => { scene.render() })
 
 window.onresize = () => {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 }
+
+let server: Server = createServer((socket: Socket) => {
+    socket.write('You are connected')
+
+    socket.on('data', (data) => {
+        console.log(data)
+        leftLowerLimb.rotate(B.Vector3.Forward(), parseFloat(data))
+    })
+
+    socket.on('end', () => { console.log('Closing connection') })
+    // socket.pipe(socket)
+})
+server.on('connection', (socket: Socket) => { console.log('New connection') })
+server.listen(1337, 'localhost')
