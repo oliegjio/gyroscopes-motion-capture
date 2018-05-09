@@ -37,16 +37,27 @@ window.onresize = () => {
     canvas.height = window.innerHeight
 }
 
+let transform = (limb: Limb, data: number[]) => {
+    limb.translate(B.Vector3.Left(), data[0])
+    limb.translate(B.Vector3.Up(), data[1])
+    limb.translate(B.Vector3.Forward(), data[2])
+    limb.rotate(B.Vector3.Left(), data[3])
+    limb.rotate(B.Vector3.Up(), data[4])
+    limb.rotate(B.Vector3.Forward(), data[5])
+}
+
+let transformWithData = (data: any) => {
+    let parsed: number[] = data.toString().split('|').map(x => parseFloat(x))
+    let id = parsed.shift()
+    console.log(parsed)
+    if (id == 1) transform(leftLowerLimb, parsed)
+    if (id == 2) transform(rightLowerLimb, parsed)
+}
+
 let server: Server = createServer((socket: Socket) => {
     socket.write('You are connected')
-
-    socket.on('data', (data) => {
-        console.log(data)
-        leftLowerLimb.rotate(B.Vector3.Forward(), parseFloat(data))
-    })
-
+    socket.on('data', (data) => { transformWithData(data) })
     socket.on('end', () => { console.log('Closing connection') })
-    // socket.pipe(socket)
 })
 server.on('connection', (socket: Socket) => { console.log('New connection') })
 server.listen(1337, 'localhost')
