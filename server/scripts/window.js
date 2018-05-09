@@ -14,6 +14,7 @@ function createWindow() {
     }));
     mainWindow.webContents.openDevTools();
     mainWindow.maximize();
+    mainWindow.setMenu(null);
     mainWindow.on('closed', function () {
         mainWindow = null;
     });

@@ -47,7 +47,7 @@ let transform = (limb: Limb, data: number[]) => {
 }
 
 let transformWithData = (data: any) => {
-    let parsed: number[] = data.toString().split('|').map(x => parseFloat(x))
+    let parsed: number[] = data.toString().split('|').map((x: string) => parseFloat(x))
     let id = parsed.shift()
     console.log(parsed)
     if (id == 1) transform(leftLowerLimb, parsed)
@@ -59,5 +59,5 @@ let server: Server = createServer((socket: Socket) => {
     socket.on('data', (data) => { transformWithData(data) })
     socket.on('end', () => { console.log('Closing connection') })
 })
-server.on('connection', (socket: Socket) => { console.log('New connection') })
+server.on('connection', (socket: Socket) => { console.log('Client connected') })
 server.listen(1337, 'localhost')

@@ -53,5 +53,5 @@ var server = net_1.createServer(function (socket) {
     socket.on('data', function (data) { transformWithData(data); });
     socket.on('end', function () { console.log('Closing connection'); });
 });
-server.on('connection', function (socket) { console.log('New connection'); });
+server.on('connection', function (socket) { console.log('Client connected'); });
 server.listen(1337, 'localhost');
