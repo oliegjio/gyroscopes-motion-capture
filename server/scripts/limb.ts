@@ -52,10 +52,7 @@ export class Limb {
     public showGuideLine(): void { this.line.setEnabled(true) }
     public hideGuideLine(): void { this.line.setEnabled(false) }
 
-    // public translate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.translate(v, n, s) }
-    public translate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void {
-        this.mesh.position = new B.Vector3(v.x, v.y, v.z)
-    }
+    public translate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.translate(v, n, s) }
     public rotate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.rotate(v, n, s) }
 
     public resetTransform(): void {

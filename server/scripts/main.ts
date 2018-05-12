@@ -41,8 +41,6 @@ rightUpperLimb.translate(B.Vector3.Left(), 40)
 rightUpperLimb.saveTransform()
 limbs.push(rightUpperLimb)
 
-// leftLowerLimb.rotate(B.Axis.Z, Math.PI / 2, B.Space.WORLD)
-
 scene.registerAfterRender(() => {})
 engine.runRenderLoop(() => { scene.render() })
 
@@ -51,33 +49,47 @@ window.onresize = () => {
     canvas.height = window.innerHeight
 }
 
-let degreesToRadians = (n: number): number => { return n * Math.PI / 180 }
-
-let transform = (limb: Limb, data: number[]) => {
-    limb.translate(B.Vector3.Left(), data[0] * 9.8, B.Space.LOCAL)
-    limb.translate(B.Vector3.Up(), data[1] * 9.8, B.Space.LOCAL)
-    if (Math.abs(data[2]) >= 1.8) limb.translate(B.Vector3.Forward(), data[2] * 9.8, B.Space.LOCAL)
-    limb.rotate(B.Vector3.Left(), degreesToRadians(data[3] / 8))
-    limb.rotate(B.Vector3.Up(), degreesToRadians(data[4] / 8))
-    limb.rotate(B.Vector3.Forward(), degreesToRadians(data[5] / 8))
+let rotateVector = (vector: B.Vector3, on: B.Vector3): void => {
+    
 }
 
-let transformWithData = (data: any) => {
-    let parsed: number[] = data.toString().split('|').map((x: string) => parseFloat(x))
+let degreesToRadians = (n: number): number => { return n * Math.PI / 180 }
+
+let removeGForce = (n: number): number => { if (Math.abs(n) >= 1.8) return n; else return 0 }
+
+let transform = (limb: Limb, data: number[]): void => {
+    let moves = data.splice(0, 3).map(x => x * 9.8)
+    let rotates = data.splice(3, 3).map(x => degreesToRadians(x / 8))
+    
+    moves[2] = removeGForce(moves[2])
+    
+    limb.translate(B.Vector3.Left(), moves[0])
+    limb.translate(B.Vector3.Up(), moves[1])
+    limb.translate(B.Vector3.Forward(), moves[2])
+    
+    limb.rotate(B.Vector3.Left(), rotates[0])
+    limb.rotate(B.Vector3.Up(), rotates[1])
+    limb.rotate(B.Vector3.Forward(), rotates[2])
+}
+
+let transformWithData = (data: string) => {
+    let parsed: number[] = data.split('|').map(x => parseFloat(x))
     let id = parsed.shift()
     transform(limbs[id], parsed)
 }
 
+let isCalibrateRequest = (data: string): boolean => { if (data[0] == '>') return true; else return false }
+let calibrate = (data: string): void => { limbs[parseInt(data[1])].resetTransform() }
+
 let handleRequest = (data: string): void => {
-    let dataString = data.toString()
-    console.log(dataString)
-    if (dataString[0] == '>') limbs[parseInt(dataString[1])].resetTransform()
+    console.log(data)
+    if (isCalibrateRequest(data)) calibrate(data)
     else transformWithData(data)
 }
 
 let server: Server = createServer((socket: Socket) => {
     socket.write('You are connected')
-    socket.on('data', (data) => { handleRequest(data) })
+    socket.on('data', (data) => { handleRequest(data.toString()) })
     socket.on('end', () => { console.log('Closing connection') })
 })
 server.on('connection', (socket: Socket) => { console.log('Client connected') })

@@ -39,10 +39,9 @@ var Limb = /** @class */ (function () {
     };
     Limb.prototype.showGuideLine = function () { this.line.setEnabled(true); };
     Limb.prototype.hideGuideLine = function () { this.line.setEnabled(false); };
-    // public translate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.translate(v, n, s) }
     Limb.prototype.translate = function (v, n, s) {
         if (s === void 0) { s = B.Space.WORLD; }
-        this.mesh.position = new B.Vector3(v.x, v.y, v.z);
+        this.mesh.translate(v, n, s);
     };
     Limb.prototype.rotate = function (v, n, s) {
         if (s === void 0) { s = B.Space.WORLD; }
