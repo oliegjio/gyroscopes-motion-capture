@@ -5,7 +5,7 @@ let socket: Socket = new Socket()
 let rnd = (min: number, max: number) => { return Math.floor(Math.random() * (max - min + 1)) + min }
 let makeRequestString = (arr: number[]) => { return arr.map((x: number) => x.toString()).join('|') }
 
-socket.connect(1337, 'localhost', () => {
+socket.connect(8000, '192.168.1.154', () => {
     console.log('Connected')
     setInterval(() => {
         let data = makeRequestString([

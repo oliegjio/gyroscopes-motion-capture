@@ -52,8 +52,23 @@ export class Limb {
     public showGuideLine(): void { this.line.setEnabled(true) }
     public hideGuideLine(): void { this.line.setEnabled(false) }
 
-    public translate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.translate(v, n, s) }
+    // public translate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.translate(v, n, s) }
+    public translate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void {
+        this.mesh.position = new B.Vector3(v.x, v.y, v.z)
+    }
     public rotate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.rotate(v, n, s) }
+
+    public resetTransform(): void {
+        this.mesh.rotation = this.savedRotation.clone()
+        this.mesh.position = this.savedPosition.clone()
+    }
+
+    private savedPosition: B.Vector3 = B.Vector3.Zero()
+    private savedRotation: B.Vector3 = B.Vector3.Zero()
+    public saveTransform(): void {
+        this.savedRotation = this.mesh.rotation.clone()
+        this.savedPosition = this.mesh.position.clone()
+    }
 
     private backPoint: B.Mesh
     public getBackPointAbsolute(): B.Vector3 {

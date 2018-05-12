@@ -4,6 +4,8 @@ var B = require("babylonjs");
 var Limb = /** @class */ (function () {
     function Limb(thickness, length, scene) {
         this.scene = scene;
+        this.savedPosition = B.Vector3.Zero();
+        this.savedRotation = B.Vector3.Zero();
         this.mesh = B.Mesh.CreateBox('Box', thickness, scene, true);
         this.mesh.scaling.x = length;
         var backSpherePosition = new B.Vector3(thickness / 2, 0, 0);
@@ -37,13 +39,22 @@ var Limb = /** @class */ (function () {
     };
     Limb.prototype.showGuideLine = function () { this.line.setEnabled(true); };
     Limb.prototype.hideGuideLine = function () { this.line.setEnabled(false); };
+    // public translate(v: B.Vector3, n: number, s: B.Space = B.Space.WORLD): void { this.mesh.translate(v, n, s) }
     Limb.prototype.translate = function (v, n, s) {
         if (s === void 0) { s = B.Space.WORLD; }
-        this.mesh.translate(v, n, s);
+        this.mesh.position = new B.Vector3(v.x, v.y, v.z);
     };
     Limb.prototype.rotate = function (v, n, s) {
         if (s === void 0) { s = B.Space.WORLD; }
         this.mesh.rotate(v, n, s);
+    };
+    Limb.prototype.resetTransform = function () {
+        this.mesh.rotation = this.savedRotation.clone();
+        this.mesh.position = this.savedPosition.clone();
+    };
+    Limb.prototype.saveTransform = function () {
+        this.savedRotation = this.mesh.rotation.clone();
+        this.savedPosition = this.mesh.position.clone();
     };
     Limb.prototype.getBackPointAbsolute = function () {
         this.mesh.computeWorldMatrix(true);
