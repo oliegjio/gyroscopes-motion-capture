@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var B = require("babylonjs");
 var net_1 = require("net");
 var limb_1 = require("./limb");
+var math_1 = require("./math");
 var canvas = document.querySelector('#canvas');
 var engine = new B.Engine(canvas, true, null, true);
 var scene = new B.Scene(engine);
@@ -34,32 +35,47 @@ var rightUpperLimb = new limb_1.Limb(5, 8, scene);
 rightUpperLimb.translate(B.Vector3.Left(), 40);
 rightUpperLimb.saveTransform();
 limbs.push(rightUpperLimb);
+var g = 0.01;
+var angle = B.Vector3.Zero();
+// let gVector: B.Vector3 = B.Vector3.Up().negate().scale(g)
+var gVector = new B.Vector3(0, 0, -0.01);
 scene.registerAfterRender(function () { });
 engine.runRenderLoop(function () { scene.render(); });
 window.onresize = function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 };
-var rotateVector = function (vector, on) {
-};
-var degreesToRadians = function (n) { return n * Math.PI / 180; };
 var removeGForce = function (n) { if (Math.abs(n) >= 1.8)
     return n;
 else
     return 0; };
 var transform = function (limb, data) {
-    var moves = data.splice(0, 3).map(function (x) { return x * 9.8; });
-    var rotates = data.splice(3, 3).map(function (x) { return degreesToRadians(x / 8); });
-    moves[2] = removeGForce(moves[2]);
-    limb.translate(B.Vector3.Left(), moves[0]);
-    limb.translate(B.Vector3.Up(), moves[1]);
-    limb.translate(B.Vector3.Forward(), moves[2]);
-    limb.rotate(B.Vector3.Left(), rotates[0]);
-    limb.rotate(B.Vector3.Up(), rotates[1]);
-    limb.rotate(B.Vector3.Forward(), rotates[2]);
+    // let moves = data.slice().splice(0, 3).map(x => x / 100000000).map(x => Math.abs(x) <= 1.5 ? 0 : x)
+    // let rotates = data.slice().splice(3, 3).map(x => x / 100000000).map(x => Math.abs(x) <= 1 ? 0 : x)
+    var moves = data.slice().splice(0, 3).map(function (x) { return x / 100; }).map(function (x) { return Math.abs(x) <= 0.001 ? 0 : x; });
+    var rotates = data.slice().splice(3, 3).map(function (x) { return x / 1000; }).map(function (x) { return Math.abs(x) <= 0.0001 ? 0 : x; });
+    // console.log(moves, rotates)
+    // console.log(moves)
+    angle.addInPlace(B.Vector3.FromArray(rotates));
+    gVector = math_1.rotateVectorQ(gVector, angle.negate());
+    // B.Vector3.FromArray(moves).add(gVector.negate()).toArray(moves)
+    var movesV = B.Vector3.FromArray(moves).add(gVector);
+    // console.log(movesV)
+    console.log(gVector);
+    limb.rotate(B.Axis.Z, rotates[2]);
+    limb.rotate(B.Axis.X, rotates[0]);
+    limb.rotate(B.Axis.Y, rotates[1]);
+    // limb.translate(B.Axis.X, moves[0])
+    // limb.translate(B.Axis.Y, moves[2])
+    // limb.translate(B.Axis.Z, moves[1])
+    limb.translate(B.Axis.X, movesV.x);
+    limb.translate(B.Axis.Y, movesV.y);
+    limb.translate(B.Axis.Z, movesV.z);
 };
 var transformWithData = function (data) {
     var parsed = data.split('|').map(function (x) { return parseFloat(x); });
+    if (parsed.length != 7)
+        return;
     var id = parsed.shift();
     transform(limbs[id], parsed);
 };
@@ -69,11 +85,11 @@ else
     return false; };
 var calibrate = function (data) { limbs[parseInt(data[1])].resetTransform(); };
 var handleRequest = function (data) {
-    console.log(data);
+    // console.log(data)
     if (isCalibrateRequest(data))
         calibrate(data);
     else
-        transformWithData(data);
+        data.split('\n').filter(function (x) { return x != ""; }).map(function (x) { return transformWithData(x); });
 };
 var server = net_1.createServer(function (socket) {
     socket.write('You are connected');
@@ -81,4 +97,4 @@ var server = net_1.createServer(function (socket) {
     socket.on('end', function () { console.log('Closing connection'); });
 });
 server.on('connection', function (socket) { console.log('Client connected'); });
-server.listen(1337, '192.168.1.154');
+server.listen(1337, '192.168.43.66');

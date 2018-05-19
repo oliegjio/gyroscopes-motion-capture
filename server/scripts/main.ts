@@ -2,6 +2,9 @@ import * as B from 'babylonjs'
 import { createServer, Server, Socket } from 'net'
 
 import { Limb } from './limb'
+import { rotateAroundX, rotateAroundY, rotateAroundZ,
+         rotateVector, rotateVectorQ,
+         radiansToDegrees, degreesToRadians } from './math'
 
 let canvas: HTMLCanvasElement = document.querySelector('#canvas')
 let engine = new B.Engine(canvas, true, null, true)
@@ -41,6 +44,11 @@ rightUpperLimb.translate(B.Vector3.Left(), 40)
 rightUpperLimb.saveTransform()
 limbs.push(rightUpperLimb)
 
+let g = 0.01
+let angle: B.Vector3 = B.Vector3.Zero()
+// let gVector: B.Vector3 = B.Vector3.Up().negate().scale(g)
+let gVector: B.Vector3 = new B.Vector3(0, 0, -0.01)
+
 scene.registerAfterRender(() => {})
 engine.runRenderLoop(() => { scene.render() })
 
@@ -49,31 +57,38 @@ window.onresize = () => {
     canvas.height = window.innerHeight
 }
 
-let rotateVector = (vector: B.Vector3, on: B.Vector3): void => {
-    
-}
-
-let degreesToRadians = (n: number): number => { return n * Math.PI / 180 }
-
 let removeGForce = (n: number): number => { if (Math.abs(n) >= 1.8) return n; else return 0 }
 
 let transform = (limb: Limb, data: number[]): void => {
-    let moves = data.splice(0, 3).map(x => x * 9.8)
-    let rotates = data.splice(3, 3).map(x => degreesToRadians(x / 8))
+    // let moves = data.slice().splice(0, 3).map(x => x / 100000000).map(x => Math.abs(x) <= 1.5 ? 0 : x)
+    // let rotates = data.slice().splice(3, 3).map(x => x / 100000000).map(x => Math.abs(x) <= 1 ? 0 : x)
+    let moves = data.slice().splice(0, 3).map(x => x / 100).map(x => Math.abs(x) <= 0.001 ? 0 : x)
+    let rotates = data.slice().splice(3, 3).map(x => x / 1000).map(x => Math.abs(x) <= 0.0001 ? 0 : x)
     
-    moves[2] = removeGForce(moves[2])
+    // console.log(moves, rotates)
+    // console.log(moves)
+    angle.addInPlace(B.Vector3.FromArray(rotates))
+    gVector = rotateVectorQ(gVector, angle.negate())
+    // B.Vector3.FromArray(moves).add(gVector.negate()).toArray(moves)
+    let movesV: B.Vector3 = B.Vector3.FromArray(moves).add(gVector)
+    // console.log(movesV)
+    console.log(gVector)
+    limb.rotate(B.Axis.Z, rotates[2])
+    limb.rotate(B.Axis.X, rotates[0])
+    limb.rotate(B.Axis.Y, rotates[1])
     
-    limb.translate(B.Vector3.Left(), moves[0])
-    limb.translate(B.Vector3.Up(), moves[1])
-    limb.translate(B.Vector3.Forward(), moves[2])
+    // limb.translate(B.Axis.X, moves[0])
+    // limb.translate(B.Axis.Y, moves[2])
+    // limb.translate(B.Axis.Z, moves[1])
     
-    limb.rotate(B.Vector3.Left(), rotates[0])
-    limb.rotate(B.Vector3.Up(), rotates[1])
-    limb.rotate(B.Vector3.Forward(), rotates[2])
+    limb.translate(B.Axis.X, movesV.x)
+    limb.translate(B.Axis.Y, movesV.y)
+    limb.translate(B.Axis.Z, movesV.z)
 }
 
-let transformWithData = (data: string) => {
+let transformWithData = (data: string): void => {
     let parsed: number[] = data.split('|').map(x => parseFloat(x))
+    if (parsed.length != 7) return
     let id = parsed.shift()
     transform(limbs[id], parsed)
 }
@@ -82,9 +97,9 @@ let isCalibrateRequest = (data: string): boolean => { if (data[0] == '>') return
 let calibrate = (data: string): void => { limbs[parseInt(data[1])].resetTransform() }
 
 let handleRequest = (data: string): void => {
-    console.log(data)
+    // console.log(data)
     if (isCalibrateRequest(data)) calibrate(data)
-    else transformWithData(data)
+    else data.split('\n').filter(x => x != "").map(x => transformWithData(x))
 }
 
 let server: Server = createServer((socket: Socket) => {
@@ -93,4 +108,4 @@ let server: Server = createServer((socket: Socket) => {
     socket.on('end', () => { console.log('Closing connection') })
 })
 server.on('connection', (socket: Socket) => { console.log('Client connected') })
-server.listen(1337, '192.168.1.154')
+server.listen(1337, '192.168.43.66')

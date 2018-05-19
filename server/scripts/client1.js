@@ -14,7 +14,7 @@ socket.connect(1337, '192.168.1.154', function () {
         //     rnd(Math.PI / 10, Math.PI / 20)
         // ])
         var data = makeRequestString([
-            0, 1, 1, 1, Math.PI / 2, 0, 0
+            0, 0, 0, 1.8, 0, 0, Math.PI / 2
         ]);
         socket.write(data);
         console.log(data);

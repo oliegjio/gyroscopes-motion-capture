@@ -44,9 +44,11 @@ var Limb = /** @class */ (function () {
         this.mesh.translate(v, n, s);
     };
     Limb.prototype.rotate = function (v, n, s) {
-        if (s === void 0) { s = B.Space.WORLD; }
+        if (s === void 0) { s = B.Space.LOCAL; }
         this.mesh.rotate(v, n, s);
     };
+    Limb.prototype.getRotation = function () { return this.mesh.rotation.clone(); };
+    Limb.prototype.setRotation = function (v) { this.mesh.rotation = v.clone(); };
     Limb.prototype.resetTransform = function () {
         this.mesh.rotation = this.savedRotation.clone();
         this.mesh.position = this.savedPosition.clone();
