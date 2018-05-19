@@ -13,23 +13,20 @@ void changeArmPosition(int message[4]);
 
 // WIFI
 WiFiClient client;
-const char *ssid  = "OnePlus3";
-const char *password = "allhailklab";
+const char *ssid  = "xtf";
+const char *password = "12345678";
 const String id = "3";
-IPAddress ip = IPAddress(192,168,43,66);
+IPAddress ip = IPAddress(192,168,0,107);
 
 // SERVO
-Servo Arm_Motors[4];
-
-
 
 
 void setup()
 {
     Serial.begin(9600);
-    
+    connect(ssid, password);
+    delay(100);
 }
-
 
 void loop()
 {
@@ -38,9 +35,12 @@ void loop()
         String line = client.readStringUntil('\n');
         int *message;
         message = convertMessage(line, '|');
-
-
+        for(int i = 0; i < MESSAGE_SIZE; i++){
+            Serial.print(message[i]);
+            Serial.print(" ");
+        }
         delete [] message;
+        Serial.println();
     }
 
 }
@@ -52,6 +52,7 @@ void connect(const char *ssid, const char *password)
 
     while(WiFi.status() != WL_CONNECTED){
         Serial.print(".");
+        delay(1000);
     }
     Serial.println();
     Serial.println("Connected to the WiFi");
